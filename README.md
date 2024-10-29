@@ -14,7 +14,7 @@ This tool is a versatile reverse shell generator designed to assist cybersecurit
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/reverse-shell-generator.git
+   git clone https://github.com/S2K7x/revshell.py
    cd reverse-shell-generator
    ```
 
@@ -26,7 +26,7 @@ This tool is a versatile reverse shell generator designed to assist cybersecurit
 ## Usage
 1. Run the script:
    ```bash
-   python reverse_shell_generator.py
+   python revshell.py
    ```
 
 2. Follow the on-screen instructions to generate a reverse shell.
